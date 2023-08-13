@@ -17,17 +17,23 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/dream', async (req, res) => {
-    const prompt = req.body.prompt;
+    try {
+        const prompt = req.body.prompt;
 
-    const aiResp = await openai.createImage({
-        prompt,
-        n: 1,
-        size: '1024x1024',
-    });
-
-    const image = aiResp.data.data[0].url;
-
-    res.send({ image });
+        const aiResp = await openai.createImage({
+            prompt,
+            n: 1,
+            size: '1024x1024',
+        });
+    
+        const image = aiResp.data.data[0].url;
+    
+        res.send({ image });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error?.response.data.error.message || 'something went wrong');
+    }
+    
 });
 
 app.listen(8080, () => console.log('http://localhost:8080/dream'));
